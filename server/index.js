@@ -87,8 +87,8 @@ io.on('connection', (socket) => {
       if (currentRoom) socket.leave(currentRoom);
 
       currentRoom = data.room;
-      console.log('current rooms code:');
-      console.log(roomCode[currentRoom]);
+      // console.log('current rooms code:');
+      // console.log(roomCode[currentRoom]);
 
       if (roomCode[currentRoom] === undefined) {
         roomCode[currentRoom] = 'helo';
@@ -102,8 +102,8 @@ io.on('connection', (socket) => {
 
   function updateRooms() {
     // declare globally all rooms that have someone using it
-    console.log('Rooms:');
-    console.log(io.sockets.adapter.rooms);
+    // console.log('Rooms:');
+    // console.log(io.sockets.adapter.rooms);
     roomsInUse = Object.keys(io.sockets.adapter.rooms).filter((key) => {
       return onlineUsers[key] === undefined;
     });
@@ -119,8 +119,8 @@ io.on('connection', (socket) => {
       finRoom[room] = arr;
       io.in(room).emit('currentUsers', finRoom[room]);
     });
-    console.log('USERS IN ROOMS:');
-    console.log(finRoom);
+    // console.log('USERS IN ROOMS:');
+    // console.log(finRoom);
 
     // update current user in user's room
     // io.emit('currentUsers', finRoom[currentRoom]);
@@ -128,7 +128,7 @@ io.on('connection', (socket) => {
     // send all available rooms to all users
     io.emit('availableRooms', roomsInUse);
 
-    console.log(roomsInUse);
+    // console.log(roomsInUse);
   }
 
   // TODO: Handle leave room event when user switches room
