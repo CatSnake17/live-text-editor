@@ -5,11 +5,11 @@ class Logo extends React.Component {
     return (
       <div className="logo">
         <img
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRmPlJoW8I6zERaV0EocfA3bA26-l9_4cI_vn-6jMd6aX7kxXI7"
+          src="https://www.peta.org/wp-content/uploads/2020/01/never-buy-ferrets-for-sale-as-pets.jpg"
           width="50"
           height="50"></img>
         <br></br>
-        <span> Team Axolotl </span>
+        <span> Team Cat Snake </span>
         <br></br>
         <span> Live Text Editor </span>
       </div>
