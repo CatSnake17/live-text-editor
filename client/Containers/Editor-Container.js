@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 import Editor from '../Components/Editor';
 import auth from '../Components/Auth';
 
-const socket = io('http://teamcatsnake.com/');
+const socket = io('https://teamcatsnake.com/');
 
 class EditorContainer extends Component {
   // Temporarily placing socket logic inside this container component
