@@ -21,13 +21,13 @@ class LoginContainer extends Component {
     this.setState({
       [name]: value,
     });
-    console.log('username: ', this.state.username);
-    console.log('password: ', this.state.password);
+    // console.log('username: ', this.state.username);
+    // console.log('password: ', this.state.password);
   }
 
   clickHandler(event) {
     event.preventDefault();
-    console.log(this.state);
+    // console.log(this.state);
     fetch('/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

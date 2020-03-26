@@ -26,7 +26,7 @@ class EditorContainer extends Component {
 
     socket.on('currentUsers', (payload) => {
       let usersArr = [];
-      console.log('users in room: ', payload);
+      // console.log('users in room: ', payload);
       for (let i = 0; i < payload.length; i++) {
         usersArr.push(<li key={payload[i]}>{payload[i]}</li>);
       }
@@ -38,7 +38,7 @@ class EditorContainer extends Component {
     socket.on('availableRooms', (payload) => {
       // console.log('testing');
       let roomsArr = [];
-      console.log('available rooms: ', payload);
+      // console.log('available rooms: ', payload);
       for (let i = 0; i < payload.length; i++) {
         roomsArr.push(<option value={payload[i]}>{payload[i]}</option>);
       }
@@ -65,7 +65,7 @@ class EditorContainer extends Component {
 
   // Handle local state updates
   updateCodeinState(text) {
-    this.setState({ code: text }, () => console.log(this.state.code));
+    this.setState({ code: text });
     socket.emit('coding', {
       room: this.state.room,
       newCode: text,
@@ -78,9 +78,7 @@ class EditorContainer extends Component {
   }
 
   runCode(code) {
-    this.setState({ consoleOutput: eval(code) }, () =>
-      console.log(this.state.consoleOutput)
-    );
+    this.setState({ consoleOutput: eval(code) });
   }
 
   clicked() {

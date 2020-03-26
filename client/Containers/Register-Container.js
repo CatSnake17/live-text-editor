@@ -20,13 +20,13 @@ class RegisterContainer extends Component {
     this.setState({
       user: { ...user, [name]: value },
     });
-    console.log('username: ', this.state.user.username);
-    console.log('password: ', this.state.user.password);
+    // console.log('username: ', this.state.user.username);
+    // console.log('password: ', this.state.user.password);
   }
 
   clickHandler(event) {
     event.preventDefault();
-    console.log(this.state);
+    // console.log(this.state);
     fetch('/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -38,7 +38,7 @@ class RegisterContainer extends Component {
             msg: 'username already in use try again',
           });
           this.props.history.push('/register');
-          console.log('this.state.msg: ', this.state.msg);
+          // console.log('this.state.msg: ', this.state.msg);
         }
       })
       .then(
