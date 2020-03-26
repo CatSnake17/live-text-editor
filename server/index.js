@@ -7,7 +7,7 @@ const socketServer = require('socket.io');
 const authRoute = require('./routes/auth');
 
 const app = express();
-const PORT = 3000;
+const PORT = 80;
 
 app.use(cookieParser());
 app.use(bodyParser.json());
