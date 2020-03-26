@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 const socketServer = require('socket.io');
+const secure = require('express-force-https');
 
 const authRoute = require('./routes/auth');
 
@@ -12,6 +13,7 @@ const PORT = 80;
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(secure);
 
 let server;
 // serve bundle.js in prod for every url
