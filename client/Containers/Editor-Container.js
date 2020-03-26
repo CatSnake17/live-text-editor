@@ -1,135 +1,126 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import Editor from '../Components/Editor';
 import auth from '../Components/Auth';
 
 const socket = io('http://localhost:80/');
 
-class EditorContainer extends Component {
-  // Temporarily placing socket logic inside this container component
-  // Can move elsewhere when refactoring, but note that socket logic needs to be handled in a single place
-  constructor() {
-    super();
-    this.state = {
-      code: 'Start coding!',
-      consoleOutput: 'Console output will display here',
-      room: 'Axolotl',
-      dropRoom: '',
-      username: auth.getUsername(),
-      users: [],
-      rooms: [],
-    };
-    // Listen for 'code sent from server'
+const EditorContainer = () => {
+  const [users, setUsers] = useState([]);
+  const [rooms, setRooms] = useState([]);
+
+  const [username, setUsername] = useState(auth.getUsername());
+  const [room, setRoom] = useState('Cat Snake');
+  const [roomInput, setRoomInput] = useState('');
+  const [consoleOutput, setConsoleOutput] = useState('No code ran.');
+  const [dropRoom, setDropRoom] = useState('Cat Snake');
+  const [code, setCode] = useState('');
+
+  useEffect(() => {
+    // SOCKET.IO START
     socket.on('code sent from server', (payload) => {
-      this.updateCodeFromSockets(payload);
+      setCode(payload.newCode);
     });
 
     socket.on('currentUsers', (payload) => {
       let usersArr = [];
-      console.log('users in room: ', payload);
-      for (let i = 0; i < payload.length; i++) {
+      for (let i = 0; i < payload.length; i += 1) {
         usersArr.push(<li key={payload[i]}>{payload[i]}</li>);
       }
-      this.setState({
-        users: usersArr,
-      });
+
+      setUsers(usersArr);
     });
 
     socket.on('availableRooms', (payload) => {
-      // console.log('testing');
       let roomsArr = [];
-      console.log('available rooms: ', payload);
-      for (let i = 0; i < payload.length; i++) {
-        roomsArr.push(<option value={payload[i]}>{payload[i]}</option>);
+      for (let i = 0; i < payload.length; i += 1) {
+        roomsArr.push(
+          <option key={payload[i]} value={payload[i]}>
+            {payload[i]}
+          </option>
+        );
       }
-
-      this.setState({
-        rooms: roomsArr,
-      });
+      setRooms(roomsArr);
     });
+    // SOCKET.IO END
 
-    this.updateCodeinState = this.updateCodeinState.bind(this);
-    this.updateCodeFromSockets = this.updateCodeFromSockets.bind(this);
-    this.runCode = this.runCode.bind(this);
-    this.clicked = this.clicked.bind(this);
-  }
+    socket.emit('username', username);
+    socket.emit('room', { room });
+  }, []);
 
-  // emit 'room' event when component mounts
-  componentDidMount() {
-    socket.emit('username', this.state.username);
-    socket.emit('room', { room: this.state.room });
-  }
-
-  // TODO: add logic for switching rooms (need to implement in UI first)
-  // Use in editorDidMount?
-
-  // Handle local state updates
-  updateCodeinState(text) {
-    this.setState({ code: text }, () => console.log(this.state.code));
+  const updateCodeInState = (text) => {
     socket.emit('coding', {
-      room: this.state.room,
+      room,
       newCode: text,
     });
-  }
 
-  // Update local state to match text input from other clients
-  updateCodeFromSockets(payload) {
-    this.setState({ code: payload.newCode });
-  }
+    setCode(text);
+  };
 
-  runCode(code) {
-    this.setState({ consoleOutput: eval(code) }, () =>
-      console.log(this.state.consoleOutput)
-    );
-  }
+  const runCode = (consoleInput) => {
+    const evaluated = eval(code);
+    setConsoleOutput(evaluated);
+  };
 
-  clicked() {
-    if (this.refs.room.value === '' && this.state.dropRoom !== 'Select Room') {
+  const clicked = () => {
+    if (roomInput === '' && dropRoom !== room) {
       socket.emit('room', {
-        room: this.state.dropRoom,
+        room: dropRoom,
       });
 
-      this.setState({ room: this.state.dropRoom });
-    }
-    if (this.refs.room.value !== '') {
+      setRoom(dropRoom);
+    } else if (roomInput !== '' && roomInput !== room) {
       socket.emit('room', {
-        room: this.refs.room.value,
+        room: roomInput,
       });
-      let roomValue = this.refs.room.value;
-      this.refs.room.value = '';
-      this.setState({ room: roomValue });
-    }
-  }
 
-  // TODO: Update the state to match what other clients have already put there.
-  render() {
-    return (
+      setRoom(roomInput);
+      setDropRoom(roomInput);
+      setRoomInput('');
+    }
+  };
+
+  useEffect(() => {
+    clicked();
+  }, [dropRoom]);
+
+  return (
+    <div>
+      <h2>Current Room: {room}</h2>
+      <input
+        type="text"
+        value={roomInput}
+        onChange={(e) => setRoomInput(e.target.value)}
+      />
+
+      <button onClick={clicked}>Create/Join Room</button>
+      <select
+        id="dropdown"
+        value={dropRoom}
+        onChange={(e) => {
+          setDropRoom(e.target.value);
+        }}>
+        <option value="Select Room" disabled>
+          Select Room
+        </option>
+        {rooms}
+      </select>
+
       <div>
-        <h2>Current Room: {this.state.room}</h2>
-        <input ref="room" type="text" />
-        <button onClick={this.clicked}>Create/Join Room</button>
-        <select
-          id="dropdown"
-          value={this.state.dropRoom}
-          onChange={(e) => this.setState({ dropRoom: e.target.value })}>
-          <option value="">Select Room</option>
-          {this.state.rooms}
-        </select>
-        <div>
-          <h5>Users in {this.state.room}:</h5>
-          <ul>{this.state.users}</ul>
-        </div>
-        <br></br>
-        <Editor
-          code={this.state.code}
-          room={this.state.room}
-          updateCodeinState={this.updateCodeinState.bind(this)}
-          runCode={this.runCode}
-          consoleOutput={this.state.consoleOutput}
-        />
+        <h5>Users in {room}:</h5>
+        <ul>{users}</ul>
       </div>
-    );
-  }
-}
+
+      <br />
+      <Editor
+        code={code}
+        room={room}
+        updateCodeinState={updateCodeInState}
+        runCode={runCode}
+        consoleOutput={consoleOutput}
+      />
+    </div>
+  );
+};
 
 export default EditorContainer;
